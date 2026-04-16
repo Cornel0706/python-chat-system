@@ -23,7 +23,7 @@ A real-time messaging system based on the **Client-Server architecture**, built 
 
 1.  **Clone the repository**:
     ```bash
-    git clone [https://github.com/your-username/python-chat-system.git](https://github.com/your-username/python-chat-system.git)
+    git clone [https://github.com/your-username/python-chat-system.git](https://github.com/Cornel76/python-chat-system)
     cd python-chat-system
     ```
 
