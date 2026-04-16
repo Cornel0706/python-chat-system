@@ -2,7 +2,7 @@
 
 A real-time messaging system based on the **Client-Server architecture**, built using the **TCP/IP** protocol. This project demonstrates the practical application of **Multithreading** to handle concurrent connections and low-level networking via Python's `socket` library.
 
-## 🚀 Features v0.1
+## 🚀 Features v1
 
 * **Real-time Communication**: Messages are broadcasted instantly to all connected users.
 * **Multithreaded Architecture**: The server can handle multiple clients simultaneously by spawning a dedicated thread for each connection.
