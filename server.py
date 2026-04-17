@@ -1,77 +1,59 @@
-import socket 
+import socket
 import threading
+import json
 
-# Configurari de baza 
+# Configurari
 IP = '127.0.0.1'
 PORT = 55555
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind((IP, PORT))
 server.listen()
-print(f'Serverul a pornit pe {IP}:{PORT}')
 
-clients = []
-nicknames = []
+# Dicționar pentru a stoca {user_id: client_socket}
+online_clients = {}
 
-def broadcast(message):
-    for client in clients:
-        client.send(message)
-
-def handle_client(client):
+def handle_client(client_socket, user_id):
+    print(f"[SERVER] Utilizatorul {user_id} s-a conectat.")
+    
     while True:
         try:
-            message = client.recv(1024)
-            if not message:
-                raise Exception()
-
-            decoded_message = message.decode('utf-8')
-
-            # --- LOGICA DE COMENZI ---
-            if ": " in decoded_message:
-                parts = decoded_message.split(": ", 1)
-                user_text = parts[1]
-
-                if user_text == '/exit':
-                    raise Exception()
+            data = client_socket.recv(1024).decode('utf-8')
+            if not data:
+                break
+            
+            message_packet = json.loads(data)
+            receiver_id = message_packet.get("receiver_id")
+            
+            if receiver_id in online_clients:
+                target_socket = online_clients[receiver_id]
+                target_socket.send(json.dumps(message_packet).encode('utf-8'))
+                print(f"[SERVER] Mesaj de la {user_id} către {receiver_id}")
+            else:
+                print(f"[SERVER] Destinatarul {receiver_id} este offline. Mesajul rămâne doar în DB.")
                 
-                if user_text == '/online':
-                    lista_useri = ", ".join(nicknames)
-                    raspuns = f"[SERVER] Utilizatori online: {lista_useri}"
-                    client.send(raspuns.encode('utf-8'))
-                    continue # Nu trimitem comanda celorlalti
-
-            # Daca nu e comanda, trimitem mesajul normal
-            broadcast(message)
-
         except:
-            # Curatenie la deconectare
-            if client in clients:
-                index = clients.index(client)
-                nickname = nicknames[index]
-                
-                clients.remove(client)
-                nicknames.remove(nickname)
-                client.close()
-                
-                broadcast(f'{nickname} a parasit chatul!'.encode('utf-8'))
             break
 
+    # Curatenie la deconectare
+    if user_id in online_clients:
+        del online_clients[user_id]
+    client_socket.close()
+    print(f"[SERVER] Utilizatorul {user_id} s-a deconectat.")
+
 def receive():
-    print('Serverul este gata sa primeasca conexiuni...')
+    print(f"Serverul rulează pe {IP}:{PORT}...")
     while True:
-        client, adress = server.accept()
-        print(f'Conexiune stabilita cu {str(adress)}')
+        client, address = server.accept()
 
-        client.send('NICK'.encode('utf-8'))
-        nickname = client.recv(1024).decode('utf-8')
+        try:
+            user_id = int(client.recv(1024).decode('utf-8'))
+            online_clients[user_id] = client
+            
+            thread = threading.Thread(target=handle_client, args=(client, user_id))
+            thread.start()
+        except:
+            client.close()
 
-        # SINCRONIZARE: Intai adaugam in liste, apoi anuntam
-        nicknames.append(nickname)
-        clients.append(client)
-
-        broadcast(f'{nickname} a intrat in chat!'.encode('utf-8'))
-
-        thread = threading.Thread(target=handle_client, args=(client,))
-        thread.start()
-
-receive()
+if __name__ == "__main__":
+    receive()

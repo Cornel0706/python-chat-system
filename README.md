@@ -2,7 +2,7 @@
 
 A real-time messaging system based on the **Client-Server architecture**, built using the **TCP/IP** protocol. This project demonstrates the practical application of **Multithreading** to handle concurrent connections and low-level networking via Python's `socket` library.
 
-## 🚀 Features v1
+## 🚀 Features v0.1
 
 * **Real-time Communication**: Messages are broadcasted instantly to all connected users.
 * **Multithreaded Architecture**: The server can handle multiple clients simultaneously by spawning a dedicated thread for each connection.
@@ -23,7 +23,7 @@ A real-time messaging system based on the **Client-Server architecture**, built 
 
 1.  **Clone the repository**:
     ```bash
-    git clone [https://github.com/your-username/python-chat-system.git](https://github.com/Cornel76/python-chat-system)
+    git clone [https://github.com/your-username/python-chat-system.git](https://github.com/your-username/python-chat-system.git)
     cd python-chat-system
     ```
 
@@ -39,16 +39,31 @@ A real-time messaging system based on the **Client-Server architecture**, built 
     python client.py
     ```
 
-## 🏗️ Project Architecture
+## 🚀 Key Features (v2.0)
 
-The system operates on a **Broadcast Model**:
-1. The **Client** sends a packet of `bytes` to the server.
-2. The **Server** intercepts the packet and checks for internal commands (like `/online`).
-3. If no command is detected, the server re-transmits (broadcasts) the message to every other client in the active list.
+* **Ultra-Modern GUI**: Built with `CustomTkinter`, featuring a native Dark Mode design, rounded corners, and a fluid user experience.
+* **Persistent Database**: Full integration with **SQLite** to store message history, user accounts, and group structures.
+* **Security First**: Authentication system using passwords protected by the **SHA-256** hashing algorithm (passwords are never stored in plain text).
+* **Smart Routing**: The server processes **JSON** data packets to deliver messages directly to the correct `receiver_id`.
+* **Dynamic Sidebar**: An automated contact list that populates and updates directly from the database.
 
-## 📈 Roadmap
+---
 
-- [ ] **Private Messaging**: Implement `/msg <user> <message>` functionality.
-- [ ] **GUI**: Build a graphical user interface using **Tkinter** or **PyQt**.
-- [ ] **Security**: Add End-to-End Encryption (E2EE) using the `cryptography` library.
-- [ ] **Persistence**: Integrate an **SQLite** database to store chat history.
+## 🛠️ Tech Stack
+
+* **Language**: Python 3.12
+* **Graphical Interface**: CustomTkinter / Pillow (for images/icons)
+* **Database**: SQLite3
+* **Networking**: Socket / Threading / JSON
+* **Security**: Hashlib (SHA-256)
+
+---
+
+## 🏗️ System Architecture
+
+The system operates on a **Client-Server-Database** architecture:
+1. **Server**: Acts as an intelligent dispatcher, managing active connections in a dictionary format: `{user_id: socket}`.
+2. **Client (GUI)**: Handles user interaction, displays chat history, and sends structured JSON packets to the server.
+3. **Database**: Maintains data integrity (Messages, Users, Group Members) and allows for offline history viewing.
+
+---
